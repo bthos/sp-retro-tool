@@ -1,0 +1,417 @@
+/* SPFx Retro Tool Styles */
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+
+.retroToolContainer {
+  min-height: 100vh;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: #323130;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+
+  h1 {
+    color: #323130;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.headerActions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.btnPrimary {
+  background: #0078d4;
+  color: white;
+  
+  &:hover {
+    background: #106ebe;
+  }
+}
+
+.btnSecondary {
+  background: #f3f2f1;
+  color: #323130;
+  border: 1px solid #d2d0ce;
+  
+  &:hover {
+    background: #e1dfdd;
+  }
+}
+
+.btnSmall {
+  padding: 4px 8px;
+  font-size: 12px;
+  min-width: 24px;
+  height: 24px;
+}
+
+/* Columns Container */
+.columnsContainer {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+  min-height: 600px;
+  flex-wrap: wrap;
+}
+
+.column {
+  flex: 1;
+  min-width: 300px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.columnHeader {
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e1e1e1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.columnTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #323130;
+  margin-bottom: 4px;
+}
+
+.columnPlaceholder {
+  font-size: 14px;
+  color: #605e5c;
+  font-style: italic;
+}
+
+.columnActions {
+  display: flex;
+  gap: 4px;
+}
+
+.columnBody {
+  flex: 1;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #a19f9d;
+  font-size: 14px;
+  text-align: center;
+  min-height: 150px;
+  
+  i {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #c8c6c4;
+  }
+}
+
+/* Cards */
+.card {
+  background: #ffffff;
+  border: 1px solid #e1e1e1;
+  border-radius: 6px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+    
+    .cardActions {
+      opacity: 1;
+    }
+  }
+}
+
+.cardContent {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #323130;
+  padding-right: 10px;
+}
+
+.cardActions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.privateCard {
+  background: #fff8f0;
+  border: 1px solid #f3e2a9;
+  
+  &:hover {
+    background: #fef7e0;
+    border-color: #e8d466;
+  }
+}
+
+/* Private Section */
+.privateSection {
+  margin-top: auto;
+  background: #fff4e6;
+  border-top: 1px solid #e1e1e1;
+  padding: 15px;
+}
+
+.privateSectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  color: #323130;
+  font-size: 14px;
+  
+  i {
+    color: #8a8886;
+    font-size: 16px;
+  }
+}
+
+.privateCards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.newCardInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d2d0ce;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 40px;
+  
+  &:focus {
+    outline: none;
+    border-color: #0078d4;
+  }
+  
+  &::placeholder {
+    color: #a19f9d;
+    font-style: italic;
+  }
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContent {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e1e1e1;
+  
+  h2 {
+    margin: 0;
+    color: #323130;
+    font-size: 20px;
+  }
+}
+
+.modalBody {
+  padding: 20px;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 20px;
+  border-top: 1px solid #e1e1e1;
+  background: #f8f9fa;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #605e5c;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    color: #323130;
+  }
+}
+
+/* Column Settings */
+.columnSettings {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.columnSetting {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  
+  input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #d2d0ce;
+    border-radius: 4px;
+    font-size: 14px;
+    
+    &:focus {
+      outline: none;
+      border-color: #0078d4;
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .columnsContainer {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .column {
+    min-width: unset;
+    width: 100%;
+  }
+  
+  .header {
+    padding: 15px 20px;
+    flex-direction: column;
+    gap: 15px;
+    
+    h1 {
+      font-size: 24px;
+    }
+  }
+  
+  .modalContent {
+    width: 95%;
+    margin: 10px;
+  }
+  
+  .columnSetting {
+    flex-direction: column;
+    align-items: stretch;
+    
+    input {
+      margin-bottom: 10px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .retroToolContainer {
+    padding: 10px;
+  }
+  
+  .header {
+    padding: 10px 15px;
+    
+    h1 {
+      font-size: 20px;
+    }
+  }
+  
+  .column {
+    min-width: unset;
+  }
+  
+  .columnHeader {
+    padding: 10px 15px;
+  }
+  
+  .columnBody {
+    padding: 10px;
+  }
+  
+  .privateSection {
+    padding: 10px;
+  }
+}
