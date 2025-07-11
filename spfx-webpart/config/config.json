@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "retro-tool-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/RetroToolWebPart.js",
+          "manifest": "./src/RetroToolWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "RetroToolWebPartStrings": "lib/webparts/retroTool/loc/{locale}.js"
+  }
+}
