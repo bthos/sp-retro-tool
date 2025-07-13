@@ -1,3 +1,24 @@
+# SPFx build outputs
+lib/
+dist/
+release/
+temp/
+*.sppkg
+sharepoint/solution/debug/
+sharepoint/solution/*.sppkg
+
+# Generated files in src (keep source .d.ts files)
+src/**/*.js
+src/**/*.js.map
+src/**/*.scss.d.ts
+src/**/*.module.css
+src/**/*.module.scss.js
+
+# SPFx specific
+.rush/
+.vscode/settings.json
+config/deploy-azure-storage.json
+
 # Build artifacts
 build/
 *.zip
@@ -38,4 +59,3 @@ coverage/
 
 # Temporary files
 tmp/
-temp/
