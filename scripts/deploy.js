@@ -16,11 +16,28 @@ const config = {
 
 // Validate configuration
 function validateConfig() {
+  // Check if already logged in
+  try {
+    execSync('npx m365 status', { stdio: 'pipe' });
+    console.log('✅ Already logged into Microsoft 365');
+    return true;
+  } catch (error) {
+    // Not logged in, continue with validation
+  }
+
   if (!config.username || !config.password) {
-    console.error('❌ Missing credentials. Please set M365_USERNAME and M365_PASSWORD environment variables.');
-    console.log('💡 Create a .env file in the root directory with:');
-    console.log('M365_USERNAME=your-username@[your-tenant].onmicrosoft.com');
-    console.log('M365_PASSWORD=your-password');
+    console.error('❌ Missing credentials. Please choose one of the following options:');
+    console.log('');
+    console.log('Option 1: Use device code authentication (recommended for MFA):');
+    console.log('   npx m365 login');
+    console.log('   npm run deploy:sharepoint');
+    console.log('');
+    console.log('Option 2: Set environment variables:');
+    console.log('   Create a .env file in the root directory with:');
+    console.log('   M365_USERNAME=your-username@[your-tenant].onmicrosoft.com');
+    console.log('   M365_PASSWORD=your-password');
+    console.log('');
+    console.log('Option 3: Use app password if MFA is enabled');
     process.exit(1);
   }
 }
@@ -64,11 +81,33 @@ async function deploy() {
     const packagePath = findPackageFile();
     console.log(`📦 Found package: ${path.basename(packagePath)}`);
     
-    // Login to Microsoft 365
-    exec(
-      `npx m365 login --authType password --userName "${config.username}" --password "${config.password}"`,
-      'Logging into Microsoft 365'
-    );
+    // Check if already logged in, if not attempt login
+    try {
+      execSync('npx m365 status', { stdio: 'pipe' });
+      console.log('✅ Using existing Microsoft 365 session');
+    } catch (error) {
+      // Not logged in, attempt to login
+      if (config.username && config.password) {
+        console.log('🔄 Attempting password authentication...');
+        try {
+          exec(
+            `npx m365 login --authType password --userName "${config.username}" --password "${config.password}"`,
+            'Logging into Microsoft 365'
+          );
+        } catch (loginError) {
+          console.error('❌ Password authentication failed. This often happens when MFA is enabled.');
+          console.log('💡 Please try device code authentication instead:');
+          console.log('   npx m365 login');
+          console.log('   npm run deploy:sharepoint');
+          throw loginError;
+        }
+      } else {
+        console.error('❌ Not logged into Microsoft 365 and no credentials provided.');
+        console.log('💡 Please login first using device code:');
+        console.log('   npx m365 login');
+        throw new Error('Authentication required');
+      }
+    }
     
     // Upload to app catalog
     exec(
