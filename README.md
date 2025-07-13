@@ -99,7 +99,26 @@ The `setup` script will:
 - Create a `.env` file with all configuration
 - Validate inputs and provide helpful feedback
 
-#### Option 2: Manual Setup
+#### Option 2: Debug & Diagnose First
+Use the built-in diagnostics to check your environment before deployment:
+
+```bash
+# Check environment, authentication, and configuration
+npm run deploy:debug
+
+# After resolving any issues, proceed with deployment
+npm run deploy:sharepoint
+```
+
+The debug command provides comprehensive diagnostics:
+- Environment validation (Node.js version, CLI availability)
+- Package verification (existence, size, modification date)
+- Configuration check (all environment variables)
+- Authentication status and user information
+- App Catalog connectivity test
+- Smart recommendations based on current state
+
+#### Option 3: Manual Setup
 ```bash
 # Clone and setup
 git clone [repository-url]
@@ -118,7 +137,7 @@ cp .env.example .env
 npm run deploy:full
 ```
 
-#### Option 3: Step-by-Step Deployment
+#### Option 4: Step-by-Step Deployment
 ```bash
 # Build production package
 npm run deploy:build
@@ -132,17 +151,19 @@ npm run package:production
 npm run deploy:sharepoint
 ```
 
-#### Option 4: Manual Upload
+#### Option 5: Manual Upload (Fallback)
+If automated deployment fails due to MFA or environment restrictions:
+
 ```bash
 # Build package
-npm run build:production
-npm run package:production
+npm run deploy:build
 
-# Manual steps:
-# 1. Go to https://[your-tenant].sharepoint.com/sites/appcatalog
-# 2. Upload sharepoint/solution/sp-retro-tool-webpart.sppkg
-# 3. Deploy solution tenant-wide
-# 4. Add webpart to modern pages
+# Manual steps (instructions provided by deploy script):
+# 1. Download: sharepoint/solution/sp-retro-tool-webpart.sppkg
+# 2. Go to: https://[your-tenant].sharepoint.com/sites/appcatalog
+# 3. Upload to "Apps for SharePoint" library
+# 4. Deploy solution tenant-wide
+# 5. Add webpart to modern pages
 ```
 
 #### Option 5: PowerShell Deployment (Windows)
@@ -178,13 +199,50 @@ npm run package:production
 ```
 
 ### Available Scripts
+
 - `npm run serve` - Local development server
 - `npm run build` - Development build
 - `npm run build:production` - Production build
 - `npm run package:production` - Create .sppkg package
+- `npm run deploy:build` - Build and package for production
 - `npm run deploy:sharepoint` - Deploy to SharePoint
+- `npm run deploy:debug` - Run comprehensive diagnostics
 - `npm run deploy:full` - Build + Package + Deploy
 - `npm run setup` - Interactive configuration
+
+### Deployment Script Features
+
+The unified deployment script (`scripts/deploy.js`) provides:
+
+**Normal Mode:**
+```bash
+npm run deploy:sharepoint
+```
+
+- Attempts authentication with provided credentials
+- Uploads package to App Catalog
+- Deploys solution tenant-wide
+- Provides manual instructions on failure
+
+**Debug Mode:**
+```bash
+npm run deploy:debug
+```
+
+- Environment diagnostics (Node.js, CLI availability)
+- Package validation and metadata
+- Configuration verification
+- Authentication status check
+- App Catalog connectivity test
+- Existing app detection
+- Smart recommendations
+
+**Help Information:**
+```bash
+node scripts/deploy.js --help
+```
+
+Shows usage instructions and available options.
 
 ## 🔐 Security & Configuration
 
@@ -234,30 +292,86 @@ The project includes automated CI/CD via GitHub Actions:
 2. **Configure**: No additional setup required - works out of the box
 3. **Customize**: Users can configure columns through the settings interface
 
-## �️ Troubleshooting
+## 🛠️ Troubleshooting
+
+### Quick Diagnostics
+
+**Before troubleshooting manually, use the built-in diagnostics:**
+
+```bash
+# Run comprehensive environment check
+npm run deploy:debug
+```
+
+This will check:
+
+- Environment setup and Node.js version
+- Package build status and metadata
+- Configuration validation
+- Authentication status
+- App Catalog connectivity
+- Existing app detection
+- Provide actionable recommendations
 
 ### Common Issues and Solutions
 
-#### Permission Denied
-- **Problem**: Can't upload or deploy to App Catalog
-- **Solution**: Ensure you have Site Collection Admin rights for the App Catalog site
-- **Check**: Verify access to `https://[your-tenant].sharepoint.com/sites/appcatalog`
+#### Authentication Failures
+
+**Problem**: Deploy script fails with authentication errors
+
+**Solutions**:
+
+1. **Use debug mode first**:
+   ```bash
+   npm run deploy:debug
+   ```
+
+2. **MFA Enabled Accounts**:
+   - The script automatically detects MFA and provides manual instructions
+   - Use app passwords instead of regular passwords
+   - Follow the manual upload steps provided by the script
+
+3. **Container Environment Issues** (GitHub Codespaces, etc.):
+   - Authentication may fail in containerized environments
+   - Script automatically falls back to manual deployment instructions
+   - Download the `.sppkg` file and upload manually
+
+#### Permission Issues
+
+**Problem**: Can't upload or deploy to App Catalog
+
+**Solutions**:
+
+- Ensure you have Site Collection Admin rights for the App Catalog site
+- Verify access to `https://[your-tenant].sharepoint.com/sites/appcatalog`
+- Check with SharePoint admin for proper permissions
+
+#### Package Not Found
+
+**Problem**: Deploy script can't find `.sppkg` file
+
+**Solutions**:
+
+1. Run build commands first:
+   ```bash
+   npm run deploy:build
+   ```
+
+2. Verify file exists:
+   ```bash
+   ls -la sharepoint/solution/
+   ```
 
 #### App Not Found After Upload
-- **Problem**: Webpart doesn't appear in the webpart gallery
-- **Solution**: 
-  1. Verify app is uploaded to App Catalog
-  2. Ensure app is deployed (not just uploaded)
-  3. Check that deployment is tenant-wide or to specific sites
-  4. Wait a few minutes for propagation
 
-#### Login Issues
-- **Problem**: `npm run deploy:sharepoint` fails with authentication errors
-- **Solutions**:
-  - Verify credentials in `.env` file are correct
-  - If MFA is enabled, use app passwords instead of regular passwords
-  - Try different authentication method or service account
-  - Check if conditional access policies are blocking the login
+**Problem**: Webpart doesn't appear in the webpart gallery
+
+**Solutions**:
+
+1. Verify app is uploaded to App Catalog
+2. Ensure app is deployed (not just uploaded)
+3. Check that deployment is tenant-wide or to specific sites
+4. Wait a few minutes for propagation
 
 #### Build Errors
 - **Problem**: `npm run build` or `npm run package:production` fails
@@ -285,7 +399,14 @@ The project includes automated CI/CD via GitHub Actions:
 
 ### Debug Commands
 
-Test your environment and configuration:
+**Primary Diagnostic Tool:**
+
+```bash
+# Use the built-in comprehensive diagnostics (recommended)
+npm run deploy:debug
+```
+
+**Manual Testing Commands:**
 
 ```bash
 # Check CLI version and installation
@@ -308,6 +429,9 @@ npm run package:production
 
 # Verify environment configuration
 node -e "require('dotenv').config(); console.log('Username:', process.env.M365_USERNAME); console.log('Tenant URL:', process.env.SHAREPOINT_TENANT_URL);"
+
+# Get deployment script help
+node scripts/deploy.js --help
 ```
 
 ### Deployment Verification
@@ -384,8 +508,35 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📞 Support
 
+### Getting Help
+
 For issues, questions, or feature requests:
-- Create an issue in the repository
-- Contact your SharePoint administrator  
-- Review the troubleshooting section above
-- Check SharePoint Framework documentation
+
+- **First**: Run diagnostics: `npm run deploy:debug`
+- **Create an issue** in the repository with diagnostic output
+- **Contact your SharePoint administrator** for tenant-specific issues
+- **Review the troubleshooting section** above
+- **Check SharePoint Framework documentation** for SPFx-specific issues
+
+### Quick Reference
+
+**Build and Deploy:**
+```bash
+npm run deploy:full        # Complete workflow
+npm run deploy:debug       # Check environment first
+npm run deploy:sharepoint  # Deploy only
+```
+
+**Troubleshooting:**
+```bash
+npm run deploy:debug       # Comprehensive diagnostics
+node scripts/deploy.js --help  # Usage information
+```
+
+**Development:**
+```bash
+npm run serve              # Local development
+npm run build:production   # Production build
+```
+
+The deployment script provides intelligent error handling and will guide you through manual deployment if automated deployment fails.

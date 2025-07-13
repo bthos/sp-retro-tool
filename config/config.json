@@ -5,8 +5,8 @@
     "retro-tool-web-part": {
       "components": [
         {
-          "entrypoint": "./lib/RetroToolWebPart.js",
-          "manifest": "./src/RetroToolWebPart.manifest.json"
+          "entrypoint": "./lib/webparts/retroTool/RetroToolWebPart.js",
+          "manifest": "./src/webparts/retroTool/RetroToolWebPart.manifest.json"
         }
       ]
     }

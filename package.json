@@ -13,6 +13,7 @@
     "package:production": "gulp package-solution --production",
     "deploy:build": "npm run build:production && npm run package:production",
     "deploy:sharepoint": "node scripts/deploy.js",
+    "deploy:debug": "node scripts/deploy.js --debug",
     "deploy:full": "npm run deploy:build && npm run deploy:sharepoint",
     "setup": "node scripts/setup.js"
   },

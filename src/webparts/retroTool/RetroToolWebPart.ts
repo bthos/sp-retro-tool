@@ -9,8 +9,8 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'RetroToolWebPartStrings';
-import RetroTool from './components/RetroTool';
-import { IRetroToolProps } from './components/IRetroToolProps';
+import RetroTool from '../../components/RetroTool';
+import { IRetroToolProps } from '../../components/IRetroToolProps';
 
 export interface IRetroToolWebPartProps {
   description: string;
