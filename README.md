@@ -67,28 +67,37 @@ A modern SharePoint Framework (SPFx) webpart for conducting effective Scrum retr
 └── .github/workflows/              # CI/CD automation
 ```
 
-## 🚀 Quick Start
+## 🚀 Quick Start & Deployment
 
 ### Prerequisites
 - Node.js 20.0.0 or higher
 - SharePoint Online tenant with Site Collection Admin rights
-- SharePoint App Catalog created
+- SharePoint App Catalog created (see setup instructions below)
 
 ### Installation & Deployment
 
 #### Option 1: Automated Setup (Recommended)
+The project includes an interactive setup script that guides you through configuration:
+
 ```bash
 # Clone and setup
 git clone [repository-url]
 cd sp-retro-tool
 npm install
 
-# Interactive setup
+# Interactive setup - walks you through tenant configuration
 npm run setup
 
-# Build and deploy
+# Build and deploy in one command
 npm run deploy:full
 ```
+
+The `setup` script will:
+- Prompt for your SharePoint tenant name
+- Ask for admin credentials  
+- Generate appropriate URLs automatically
+- Create a `.env` file with all configuration
+- Validate inputs and provide helpful feedback
 
 #### Option 2: Manual Setup
 ```bash
@@ -97,7 +106,7 @@ git clone [repository-url]
 cd sp-retro-tool
 npm install
 
-# Configure environment
+# Configure environment manually
 cp .env.example .env
 # Edit .env with your tenant details:
 # M365_USERNAME=admin@[your-tenant].onmicrosoft.com
@@ -109,16 +118,50 @@ cp .env.example .env
 npm run deploy:full
 ```
 
-#### Option 3: Manual Upload
+#### Option 3: Step-by-Step Deployment
+```bash
+# Build production package
+npm run deploy:build
+
+# Deploy to SharePoint (uses credentials from .env)
+npm run deploy:sharepoint
+
+# Or do both steps individually:
+npm run build:production
+npm run package:production
+npm run deploy:sharepoint
+```
+
+#### Option 4: Manual Upload
 ```bash
 # Build package
 npm run build:production
 npm run package:production
 
-# Upload sharepoint/solution/sp-retro-tool-webpart.sppkg to App Catalog
-# Deploy solution tenant-wide
-# Add webpart to modern pages
+# Manual steps:
+# 1. Go to https://[your-tenant].sharepoint.com/sites/appcatalog
+# 2. Upload sharepoint/solution/sp-retro-tool-webpart.sppkg
+# 3. Deploy solution tenant-wide
+# 4. Add webpart to modern pages
 ```
+
+#### Option 5: PowerShell Deployment (Windows)
+For Windows environments, use the PowerShell script:
+
+```powershell
+cd scripts
+$SecurePassword = ConvertTo-SecureString "YourPassword" -AsPlainText -Force
+.\deploy.ps1 -Username "admin@[your-tenant].onmicrosoft.com" -Password $SecurePassword -TenantUrl "https://[your-tenant].sharepoint.com"
+```
+
+### App Catalog Setup
+If you don't have an App Catalog:
+
+1. Go to SharePoint Admin Center
+2. Navigate to **More features** → **Apps** → **App Catalog**
+3. Create new App Catalog site
+4. Wait for provisioning (can take 30 minutes)
+5. Verify access at `https://[your-tenant].sharepoint.com/sites/appcatalog`
 
 ## 🔧 Development
 
@@ -191,18 +234,129 @@ The project includes automated CI/CD via GitHub Actions:
 2. **Configure**: No additional setup required - works out of the box
 3. **Customize**: Users can configure columns through the settings interface
 
-## 🔧 Troubleshooting
+## �️ Troubleshooting
 
-### Common Issues
-- **Build Errors**: Check Node.js version (20.0.0+ required)
-- **Deployment Fails**: Verify credentials and app catalog access
-- **Webpart Missing**: Ensure solution is deployed tenant-wide
+### Common Issues and Solutions
 
-### Debug Steps
-1. Check browser developer tools console
-2. Verify .env file configuration
-3. Test with `npm run serve` locally
-4. Confirm SharePoint App Catalog access
+#### Permission Denied
+- **Problem**: Can't upload or deploy to App Catalog
+- **Solution**: Ensure you have Site Collection Admin rights for the App Catalog site
+- **Check**: Verify access to `https://[your-tenant].sharepoint.com/sites/appcatalog`
+
+#### App Not Found After Upload
+- **Problem**: Webpart doesn't appear in the webpart gallery
+- **Solution**: 
+  1. Verify app is uploaded to App Catalog
+  2. Ensure app is deployed (not just uploaded)
+  3. Check that deployment is tenant-wide or to specific sites
+  4. Wait a few minutes for propagation
+
+#### Login Issues
+- **Problem**: `npm run deploy:sharepoint` fails with authentication errors
+- **Solutions**:
+  - Verify credentials in `.env` file are correct
+  - If MFA is enabled, use app passwords instead of regular passwords
+  - Try different authentication method or service account
+  - Check if conditional access policies are blocking the login
+
+#### Build Errors
+- **Problem**: `npm run build` or `npm run package:production` fails
+- **Solutions**:
+  - Ensure Node.js version is 20.0.0 or higher: `node --version`
+  - Clear node_modules and reinstall: `rm -rf node_modules package-lock.json && npm install`
+  - Check for TypeScript errors: `npm run build` shows detailed error messages
+  - Verify all dependencies are installed correctly
+
+#### Missing App Catalog
+- **Problem**: App Catalog site doesn't exist
+- **Solution**:
+  1. Go to SharePoint Admin Center
+  2. Navigate to **More features** → **Apps** → **App Catalog**
+  3. Create new App Catalog site
+  4. Wait for provisioning (can take 30 minutes)
+  5. Update `APP_CATALOG_URL` in your `.env` file
+
+#### Package Not Found
+- **Problem**: Deploy script can't find `.sppkg` file
+- **Solution**: 
+  1. Run `npm run build:production` first
+  2. Run `npm run package:production` to create the package
+  3. Verify file exists at `sharepoint/solution/sp-retro-tool-webpart.sppkg`
+
+### Debug Commands
+
+Test your environment and configuration:
+
+```bash
+# Check CLI version and installation
+npx m365 --version
+
+# Test authentication (will prompt for login)
+npx m365 login
+
+# List apps in your catalog
+npx m365 spo app list --appCatalogUrl "https://[your-tenant].sharepoint.com/sites/appcatalog"
+
+# Get specific app details
+npx m365 spo app get --name "sp-retro-tool-webpart" --appCatalogUrl "https://[your-tenant].sharepoint.com/sites/appcatalog"
+
+# Test local build
+npm run build
+
+# Test package creation
+npm run package:production
+
+# Verify environment configuration
+node -e "require('dotenv').config(); console.log('Username:', process.env.M365_USERNAME); console.log('Tenant URL:', process.env.SHAREPOINT_TENANT_URL);"
+```
+
+### Deployment Verification
+
+After deployment, verify everything works:
+
+1. **Check App Catalog**:
+   - Go to `https://[your-tenant].sharepoint.com/sites/appcatalog`
+   - Navigate to **Apps for SharePoint** library
+   - Verify your app shows status as "Deployed"
+
+2. **Test on a Page**:
+   - Go to any modern SharePoint site
+   - Edit a page
+   - Add web part → Search "Retrospective Tool"
+   - Verify the webpart loads and functions correctly
+
+3. **Check Browser Console**:
+   - Open browser developer tools (F12)
+   - Look for any JavaScript errors in console
+   - Verify network requests are successful
+
+### Getting Help
+
+If you continue to have issues:
+
+1. **Check the deployment logs** in your terminal for specific error messages
+2. **Verify your SharePoint environment** meets the prerequisites
+3. **Test with a different user account** that has admin rights
+4. **Try manual upload** as a fallback method
+5. **Contact your SharePoint administrator** for tenant-specific issues
+
+### Advanced Troubleshooting
+
+For complex deployment scenarios:
+
+```bash
+# Enable verbose logging
+DEBUG=* npm run deploy:sharepoint
+
+# Test CLI authentication separately
+npx m365 login --authType password --userName "your-username" --password "your-password"
+
+# Check tenant configuration
+npx m365 spo tenant get
+
+# Verify app permissions
+npx m365 spo app permission list --appId [your-app-id]
+```
 
 ## 📄 Browser Support
 - Chrome 90+
@@ -226,26 +380,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 3. Make your changes
 4. Submit a pull request
 
+
+
 ## 📞 Support
-For issues, questions, or feature requests, please create an issue in the repository or contact your SharePoint administrator.
 
-## Browser Support
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-- SharePoint Online compatible
-
-## Future Enhancements
-- SharePoint List integration
-- Real-time collaboration via SignalR
-- Export to Excel/CSV
-- Microsoft Teams integration
-- Card voting system
-- Anonymous mode
-- Integration with SharePoint lists
-- Email notifications
-- Custom themes
-
-## License
-This project is licensed under the ISC License.
+For issues, questions, or feature requests:
+- Create an issue in the repository
+- Contact your SharePoint administrator  
+- Review the troubleshooting section above
+- Check SharePoint Framework documentation
