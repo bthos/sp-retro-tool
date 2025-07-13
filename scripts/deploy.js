@@ -11,7 +11,7 @@ const config = {
   appCatalogUrl: process.env.APP_CATALOG_URL || 'https://[your-tenant].sharepoint.com/sites/appcatalog',
   username: process.env.M365_USERNAME,
   password: process.env.M365_PASSWORD,
-  packageName: 'sp-retro-tool-webpart'
+  packageName: 'sp-retro-tool-webpart-client-side-solution'
 };
 
 // Parse command line arguments
@@ -28,6 +28,14 @@ function runDiagnostics() {
   console.log(`Node.js version: ${process.version}`);
   console.log(`Working directory: ${process.cwd()}`);
   console.log(`CLI for Microsoft 365 available: ${checkM365CLI()}`);
+  
+  if (!checkM365CLI()) {
+    console.log('');
+    console.log('🛠️  Microsoft 365 CLI Setup Required:');
+    console.log('   1. Install globally: npm install -g @pnp/cli-microsoft365');
+    console.log('   2. Configure: m365 setup');
+    console.log('   3. Login: m365 login');
+  }
   console.log('');
 
   // Check package file
@@ -67,6 +75,10 @@ function runDiagnostics() {
       console.log('❌ Not logged into Microsoft 365');
       console.log('');
       console.log('💡 Authentication Options:');
+      console.log('   Prerequisites:');
+      console.log('      npm install -g @pnp/cli-microsoft365');
+      console.log('      m365 setup');
+      console.log('');
       console.log('   1. Device Code (recommended for MFA):');
       console.log('      npx m365 login');
       console.log('');
@@ -103,8 +115,14 @@ function runDiagnostics() {
       const apps = JSON.parse(result);
       console.log(`   ✅ App Catalog accessible (${apps.length} apps found)`);
       
-      // Check if our app exists
-      const ourApp = apps.find(app => app.Title === config.packageName);
+      // Check if our app exists (try multiple ways)
+      let ourApp = apps.find(app => app.Title === config.packageName);
+      
+      if (!ourApp) {
+        // Try finding by partial name match
+        ourApp = apps.find(app => app.Title && app.Title.includes('retro-tool'));
+      }
+      
       if (ourApp) {
         console.log(`   📱 Found existing app: ${ourApp.Title} (Status: ${ourApp.Deployed ? 'Deployed' : 'Not Deployed'})`);
       } else {
@@ -166,6 +184,127 @@ function checkAuthStatus() {
   }
 }
 
+// Handle specific AAD authentication errors
+function handleAADError(error) {
+  const errorMessage = error.message || error.toString();
+  
+  if (errorMessage.includes('AADSTS700016')) {
+    console.log('');
+    console.log('🚨 Microsoft 365 CLI Not Registered in Tenant');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('');
+    console.log('The Microsoft 365 CLI application is not registered in your tenant.');
+    console.log('This is common in enterprise environments with strict app policies.');
+    console.log('');
+    console.log('🛠️  Solutions (Choose One):');
+    console.log('');
+    console.log('1. 💻 Use PowerShell SharePoint Management Shell:');
+    console.log('   Install-Module -Name Microsoft.Online.SharePoint.PowerShell');
+    console.log('   Connect-SPOService -Url https://[tenant]-admin.sharepoint.com');
+    console.log('   Add-SPOApp -Path "sp-retro-tool-webpart.sppkg" -Overwrite');
+    console.log('');
+    console.log('2. 📁 Manual Upload (Recommended - Works Immediately):');
+    console.log('   • Go to: https://[tenant]-admin.sharepoint.com');
+    console.log('   • Navigate: More features → Apps → App Catalog');
+    console.log('   • Upload the .sppkg file from sharepoint/solution/');
+    console.log('   • Deploy with "Make available to all sites" checked');
+    console.log('');
+    return true;
+  }
+  
+  if (errorMessage.includes('AADSTS50076')) {
+    console.log('');
+    console.log('🔐 Multi-Factor Authentication Required');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('');
+    console.log('Your account requires MFA which blocks programmatic authentication.');
+    console.log('');
+    console.log('💡 Solutions (Choose One):');
+    console.log('');
+    console.log('1. 🔐 Use Device Code Authentication (Recommended):');
+    console.log('   npx m365 login --authType deviceCode');
+    console.log('   # Follow the prompts to authenticate with MFA');
+    console.log('   # Then retry: npm run deploy:sharepoint');
+    console.log('');
+    console.log('2. 🌐 Use Browser Authentication:');
+    console.log('   npx m365 login --authType browser');
+    console.log('   # Opens browser for MFA authentication');
+    console.log('   # Then retry: npm run deploy:sharepoint');
+    console.log('');
+    console.log('3. 📁 Manual Upload (Always Works):');
+    console.log('   # Use SharePoint Admin Center (see detailed instructions below)');
+    console.log('');
+    return true;
+  }
+  
+  if (errorMessage.includes('AADSTS50020')) {
+    console.log('');
+    console.log('🚫 User Account Issues');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('');
+    console.log('The user account has restrictions or is not properly configured.');
+    console.log('');
+    console.log('💡 Solutions:');
+    console.log('1. Verify account has SharePoint admin permissions');
+    console.log('2. Check if account is enabled and not locked');
+    console.log('3. Contact your IT administrator');
+    console.log('');
+    return true;
+  }
+  
+  return false;
+}
+
+// Attempt various authentication methods
+async function attemptAuthentication() {
+  console.log('🔐 Attempting Microsoft 365 authentication...');
+  
+  // Method 1: Try device code authentication (most compatible)
+  try {
+    console.log('');
+    console.log('🔄 Trying device code authentication...');
+    execSync('npx m365 login --authType deviceCode', { stdio: 'inherit', timeout: 30000 });
+    return true;
+  } catch (error) {
+    if (handleAADError(error)) {
+      return false;
+    }
+    console.log('❌ Device code authentication failed');
+  }
+  
+  // Method 2: Try browser authentication
+  try {
+    console.log('');
+    console.log('🔄 Trying browser authentication...');
+    execSync('npx m365 login --authType browser', { stdio: 'inherit', timeout: 30000 });
+    return true;
+  } catch (error) {
+    if (handleAADError(error)) {
+      return false;
+    }
+    console.log('❌ Browser authentication failed');
+  }
+  
+  // Method 3: Try username/password if available
+  if (config.username && config.password) {
+    try {
+      console.log('');
+      console.log('🔄 Trying username/password authentication...');
+      execSync(`npx m365 login --authType password --userName "${config.username}" --password "${config.password}"`, { stdio: 'inherit' });
+      return true;
+    } catch (error) {
+      if (handleAADError(error)) {
+        return false;
+      }
+      console.log('❌ Username/password authentication failed');
+    }
+  }
+  
+  console.log('');
+  console.log('❌ All authentication methods failed');
+  return false;
+}
+
 // Validate configuration and provide fallback instructions
 function validateConfig() {
   // Check if already logged in
@@ -176,24 +315,33 @@ function validateConfig() {
 
   console.log('🔐 Not authenticated with Microsoft 365');
   console.log('');
-  console.log('⚠️  Authentication Issue Detected');
-  console.log('The m365 CLI authentication may be failing in this environment.');
+  console.log('⚠️  Authentication Required');
+  console.log('The deployment requires Microsoft 365 authentication.');
   console.log('');
 
   if (!config.username || !config.password) {
     console.log('🛠️  Authentication Options:');
     console.log('');
-    console.log('Option 1: Use device code authentication (recommended for MFA):');
-    console.log('   npx m365 login');
-    console.log('   npm run deploy:sharepoint');
+    console.log('Prerequisites (one-time setup):');
+    console.log('   npm install -g @pnp/cli-microsoft365');
+    console.log('   m365 setup');
     console.log('');
-    console.log('Option 2: Set environment variables:');
-    console.log('   Create a .env file in the root directory with:');
-    console.log('   M365_USERNAME=your-username@[your-tenant].onmicrosoft.com');
+    console.log('Option 1: Device Code (Most Compatible):');
+    console.log('   npm run deploy:login:device');
+    console.log('');
+    console.log('Option 2: Browser Authentication:');
+    console.log('   npm run deploy:login:browser');
+    console.log('');
+    console.log('Option 3: Interactive Login:');
+    console.log('   npm run deploy:login');
+    console.log('');
+    console.log('Option 4: Set Environment Variables:');
+    console.log('   Create a .env file with:');
+    console.log('   M365_USERNAME=admin@[tenant].onmicrosoft.com');
     console.log('   M365_PASSWORD=your-password');
     console.log('');
-    console.log('Option 3: Manual deployment (if authentication fails):');
-    console.log('   The script will provide manual instructions');
+    console.log('Option 5: Manual Deployment:');
+    console.log('   Use SharePoint Admin Center to upload .sppkg file');
     console.log('');
     return false;
   }
@@ -264,15 +412,29 @@ async function deploy() {
   try {
     console.log('🚀 Starting SharePoint deployment...');
     
-    // Find package file
-    const packagePath = findPackageFile();
-    console.log(`📦 Found package: ${path.basename(packagePath)}`);
+    // Step 1: Check prerequisites
+    if (!checkM365CLI()) {
+      throw new Error('Microsoft 365 CLI not installed. Run: npm install -g @pnp/cli-microsoft365');
+    }
+
+    // Step 2: Find or build package file
+    let packagePath;
+    try {
+      packagePath = findPackageFile();
+      console.log(`📦 Found package: ${path.basename(packagePath)}`);
+    } catch (error) {
+      console.log('📦 Package not found, building solution...');
+      exec('npm run build:production', 'Building solution');
+      exec('npm run package:production', 'Packaging solution');
+      packagePath = findPackageFile();
+      console.log(`📦 Created package: ${path.basename(packagePath)}`);
+    }
     
-    // Validate configuration and check authentication
-    const isAuthenticated = validateConfig();
-    
-    if (!isAuthenticated) {
-      // Try to authenticate if credentials are provided
+    // Step 3: Check authentication
+    if (!checkAuthStatus()) {
+      console.log('🔐 Not authenticated with Microsoft 365');
+      
+      // Attempt authentication if credentials are provided
       if (config.username && config.password) {
         console.log('🔄 Attempting password authentication...');
         try {
@@ -281,7 +443,15 @@ async function deploy() {
             'Logging into Microsoft 365'
           );
         } catch (loginError) {
+          console.log('');
           console.error('❌ Password authentication failed. This often happens when MFA is enabled.');
+          
+          // Handle specific authentication errors
+          if (handleAADError(loginError)) {
+            showManualDeploymentInstructions(packagePath);
+            process.exit(1);
+          }
+          
           console.log('💡 Falling back to manual deployment instructions...');
           showManualDeploymentInstructions(packagePath);
           console.log('');
@@ -289,35 +459,60 @@ async function deploy() {
           process.exit(1);
         }
       } else {
-        // No credentials provided, show manual instructions
+        // No credentials provided - try other authentication methods
         console.log('');
-        console.log('⚠️  No automated deployment possible without authentication');
-        showManualDeploymentInstructions(packagePath);
+        console.log('⚠️  No credentials provided, attempting alternative authentication...');
+        
+        const authSuccess = await attemptAuthentication();
+        if (!authSuccess) {
+          console.log('');
+          console.log('⚠️  No automated deployment possible without authentication');
+          showManualDeploymentInstructions(packagePath);
         console.log('');
         console.log('❌ Automated deployment failed - manual intervention required');
-        process.exit(1);
+          process.exit(1);
+        }
       }
+    } else {
+      console.log('✅ Using existing Microsoft 365 session');
     }
     
-    console.log('✅ Using existing Microsoft 365 session');
-    
-    // Upload to app catalog
+    // Step 4: Upload to app catalog
+    console.log('');
     exec(
       `npx m365 spo app add --filePath "${packagePath}" --appCatalogUrl "${config.appCatalogUrl}" --overwrite`,
       'Uploading to App Catalog'
     );
     
-    // Get app information
+    // Step 5: Get app information and deploy
+    console.log('📱 Getting app information...');
     const appListOutput = execSync(
       `npx m365 spo app list --appCatalogUrl "${config.appCatalogUrl}" --output json`,
       { encoding: 'utf8' }
     );
     
     const apps = JSON.parse(appListOutput);
-    const targetApp = apps.find(app => app.Title === config.packageName);
+    
+    // Try multiple ways to find the app
+    let targetApp = apps.find(app => app.Title === config.packageName);
     
     if (!targetApp) {
-      throw new Error(`App "${config.packageName}" not found in app catalog`);
+      // Try finding by partial name match
+      targetApp = apps.find(app => app.Title && app.Title.includes('retro-tool'));
+    }
+    
+    if (!targetApp) {
+      // Try finding by filename
+      const packageFileName = path.basename(packagePath, '.sppkg');
+      targetApp = apps.find(app => app.Title && app.Title.includes(packageFileName));
+    }
+    
+    if (!targetApp) {
+      console.log('📋 Available apps in catalog:');
+      apps.forEach(app => {
+        console.log(`   - ${app.Title} (ID: ${app.ID})`);
+      });
+      throw new Error(`App "${config.packageName}" not found in app catalog after upload. Check available apps above.`);
     }
     
     console.log(`📱 Found app: ${targetApp.Title} (ID: ${targetApp.ID})`);
@@ -328,19 +523,40 @@ async function deploy() {
       'Deploying app tenant-wide'
     );
     
-    // Logout
-    exec('npx m365 logout', 'Logging out');
+    // Step 6: Cleanup and success message
+    try {
+      exec('npx m365 logout', 'Logging out');
+    } catch (logoutError) {
+      // Ignore logout errors - not critical
+      console.log('⚠️  Note: Could not logout automatically');
+    }
     
+    console.log('');
     console.log('🎉 Deployment completed successfully!');
-    console.log(`📝 App is now available at: ${config.tenantUrl}`);
-    console.log('💡 You can now add the web part to any modern SharePoint page.');
+    console.log('═══════════════════════════════════════════════');
+    console.log('');
+    console.log(`� App Name: ${config.packageName}`);
+    console.log(`🏪 App Catalog: ${config.appCatalogUrl}`);
+    console.log(`🌐 Tenant: ${config.tenantUrl}`);
+    console.log('');
+    console.log('� Next Steps:');
+    console.log('1. Go to your SharePoint site');
+    console.log('2. Edit a page or create a new one');
+    console.log('3. Add the "Retro Tool" web part');
+    console.log('4. Configure and start your retrospective!');
+    console.log('');
+    console.log('💡 The web part is now available on all sites in your tenant.');
     
   } catch (error) {
+    console.log('');
     console.error('💥 Deployment failed:', error.message);
     
     // Show manual deployment instructions as fallback
     try {
       const packagePath = findPackageFile();
+      console.log('');
+      console.log('🔄 Fallback: Manual Deployment Available');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       showManualDeploymentInstructions(packagePath);
       console.log('');
       console.log('❌ Automated deployment failed - manual intervention required');

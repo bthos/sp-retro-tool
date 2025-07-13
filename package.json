@@ -15,6 +15,10 @@
     "deploy:sharepoint": "node scripts/deploy.js",
     "deploy:debug": "node scripts/deploy.js --debug",
     "deploy:full": "npm run deploy:build && npm run deploy:sharepoint",
+    "m365:login": "npx @pnp/cli-microsoft365 login",
+    "m365:login-device": "npx @pnp/cli-microsoft365 login --authType deviceCode",
+    "m365:login-browser": "npx @pnp/cli-microsoft365 login --authType browser",
+    "m365:logout": "npx @pnp/cli-microsoft365 logout",
     "setup": "node scripts/setup.js"
   },
   "dependencies": {

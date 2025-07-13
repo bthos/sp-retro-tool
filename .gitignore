@@ -36,6 +36,7 @@ package-lock.json
 
 # IDE files
 .vscode/
+.specstory/
 .idea/
 *.swp
 *.swo

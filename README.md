@@ -1,4 +1,4 @@
-# SharePoint Retrospective Tool
+# Scrum Retrospective tool for SharePoint
 
 A modern SharePoint Framework (SPFx) webpart for conducting effective Scrum retrospectives in SharePoint Online environments.
 
@@ -73,6 +73,27 @@ A modern SharePoint Framework (SPFx) webpart for conducting effective Scrum retr
 - Node.js 20.0.0 or higher
 - SharePoint Online tenant with Site Collection Admin rights
 - SharePoint App Catalog created (see setup instructions below)
+- Microsoft 365 CLI installed and configured:
+  ```bash
+  npm install -g @pnp/cli-microsoft365
+  m365 setup
+  ```
+
+### Microsoft 365 CLI Setup (One-time)
+Before deployment, ensure the Microsoft 365 CLI is properly configured:
+
+```bash
+# Install globally (if not already installed)
+npm install -g @pnp/cli-microsoft365
+
+# Run setup to configure the CLI
+m365 setup
+
+# Login to your Microsoft 365 tenant
+m365 login
+```
+
+The CLI will guide you through the authentication process. For enterprise environments with MFA, use device code authentication when prompted.
 
 ### Installation & Deployment
 
@@ -117,6 +138,7 @@ The debug command provides comprehensive diagnostics:
 - Authentication status and user information
 - App Catalog connectivity test
 - Smart recommendations based on current state
+
 
 #### Option 3: Manual Setup
 ```bash

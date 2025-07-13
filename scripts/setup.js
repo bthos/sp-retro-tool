@@ -63,7 +63,19 @@ APP_CATALOG_URL=${appCatalogUrl}
     
     console.log('✅ Created .env file successfully!');
     console.log('🔒 Make sure to add .env to your .gitignore file');
-    console.log('\n🚀 You can now run: npm run deploy:full');
+    console.log('');
+    console.log('�️  Next Steps:');
+    console.log('1. Install Microsoft 365 CLI (if not already installed):');
+    console.log('   npm install -g @pnp/cli-microsoft365');
+    console.log('');
+    console.log('2. Configure the CLI:');
+    console.log('   m365 setup');
+    console.log('');
+    console.log('3. Login to Microsoft 365:');
+    console.log('   m365 login');
+    console.log('');
+    console.log('4. Deploy your solution:');
+    console.log('   npm run deploy:full');
     
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
