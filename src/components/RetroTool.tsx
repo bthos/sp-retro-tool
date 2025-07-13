@@ -64,46 +64,82 @@ export default class RetroTool extends React.Component<IRetroToolProps, IRetroTo
 
   // Load columns from localStorage or use defaults
   private loadColumns(): IColumn[] {
-    const saved = localStorage.getItem('retro-columns');
-    return saved ? JSON.parse(saved) : this.getDefaultColumns();
+    try {
+      const saved = localStorage.getItem('retro-columns');
+      return saved ? JSON.parse(saved) : this.getDefaultColumns();
+    } catch (error) {
+      console.error('Error loading columns from localStorage:', error);
+      return this.getDefaultColumns();
+    }
   }
 
   // Save columns to localStorage
   private saveColumns(): void {
-    localStorage.setItem('retro-columns', JSON.stringify(this.state.columns));
+    try {
+      localStorage.setItem('retro-columns', JSON.stringify(this.state.columns));
+    } catch (error) {
+      console.error('Error saving columns to localStorage:', error);
+    }
   }
 
   // Load cards from localStorage
   private loadCards(): ICard[] {
-    const saved = localStorage.getItem('retro-cards');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('retro-cards');
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error('Error loading cards from localStorage:', error);
+      return [];
+    }
   }
 
   // Save cards to localStorage
   private saveCards(): void {
-    localStorage.setItem('retro-cards', JSON.stringify(this.state.cards));
+    try {
+      localStorage.setItem('retro-cards', JSON.stringify(this.state.cards));
+    } catch (error) {
+      console.error('Error saving cards to localStorage:', error);
+    }
   }
 
   // Load private cards from localStorage
   private loadPrivateCards(): ICard[] {
-    const saved = localStorage.getItem('retro-private-cards');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('retro-private-cards');
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error('Error loading private cards from localStorage:', error);
+      return [];
+    }
   }
 
   // Save private cards to localStorage
   private savePrivateCards(): void {
-    localStorage.setItem('retro-private-cards', JSON.stringify(this.state.privateCards));
+    try {
+      localStorage.setItem('retro-private-cards', JSON.stringify(this.state.privateCards));
+    } catch (error) {
+      console.error('Error saving private cards to localStorage:', error);
+    }
   }
 
   // Get next card ID
   private getNextCardId(): number {
-    const saved = localStorage.getItem('retro-next-card-id');
-    return saved ? parseInt(saved) : 1;
+    try {
+      const saved = localStorage.getItem('retro-next-card-id');
+      return saved ? parseInt(saved) : 1;
+    } catch (error) {
+      console.error('Error loading next card ID from localStorage:', error);
+      return 1;
+    }
   }
 
   // Save next card ID
   private saveNextCardId(): void {
-    localStorage.setItem('retro-next-card-id', this.state.currentCardId.toString());
+    try {
+      localStorage.setItem('retro-next-card-id', this.state.currentCardId.toString());
+    } catch (error) {
+      console.error('Error saving next card ID to localStorage:', error);
+    }
   }
 
   // Generate unique card ID
@@ -477,6 +513,30 @@ export default class RetroTool extends React.Component<IRetroToolProps, IRetroTo
         </div>
       </div>
     );
+  }
+
+  // Clear all localStorage data (useful for debugging)
+  private clearAllData(): void {
+    try {
+      localStorage.removeItem('retro-columns');
+      localStorage.removeItem('retro-cards');
+      localStorage.removeItem('retro-private-cards');
+      localStorage.removeItem('retro-next-card-id');
+      
+      // Reset state to defaults
+      this.setState({
+        columns: this.getDefaultColumns(),
+        cards: [],
+        privateCards: [],
+        currentCardId: 1,
+        showSettings: false,
+        tempColumns: []
+      });
+      
+      console.log('All retro data cleared successfully');
+    } catch (error) {
+      console.error('Error clearing retro data:', error);
+    }
   }
 
   public render(): React.ReactElement<IRetroToolProps> {

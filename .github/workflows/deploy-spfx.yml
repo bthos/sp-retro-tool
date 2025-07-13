@@ -1,0 +1,93 @@
+name: SPFx Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'src/**', 'config/**', 'package.json', 'tsconfig.json', 'gulpfile.js' ]
+  pull_request:
+    branches: [ main ]
+    paths: [ 'src/**', 'config/**', 'package.json', 'tsconfig.json', 'gulpfile.js' ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20.x'
+  PACKAGE_PATH: './'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.PACKAGE_PATH }}/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ${{ env.PACKAGE_PATH }}
+      run: npm ci
+      
+    - name: Build solution
+      working-directory: ${{ env.PACKAGE_PATH }}
+      run: |
+        gulp clean
+        gulp bundle --production
+        gulp package-solution --production
+        
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: spfx-package
+        path: ${{ env.PACKAGE_PATH }}/sharepoint/solution/*.sppkg
+        retention-days: 30
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: spfx-package
+        path: ./artifacts
+        
+    - name: Install CLI for Microsoft 365
+      run: npm install -g @pnp/cli-microsoft365
+      
+    - name: Login to Microsoft 365
+      run: |
+        m365 login --authType password --userName ${{ secrets.M365_USERNAME }} --password ${{ secrets.M365_PASSWORD }}
+        
+    - name: Deploy to SharePoint App Catalog
+      run: |
+        SPPKG_FILE=$(find ./artifacts -name "*.sppkg" | head -1)
+        echo "Deploying package: $SPPKG_FILE"
+        
+        # Upload to app catalog
+        m365 spo app add --filePath "$SPPKG_FILE" --appCatalogUrl "${{ secrets.APP_CATALOG_URL }}" --overwrite
+        
+        # Get the app ID
+        APP_ID=$(m365 spo app list --appCatalogUrl "${{ secrets.APP_CATALOG_URL }}" --query "[?Title=='sp-retro-tool-webpart'].ID" --output text)
+        
+        # Deploy the app
+        m365 spo app deploy --id "$APP_ID" --appCatalogUrl "${{ secrets.APP_CATALOG_URL }}" --skipFeatureDeployment
+        
+    - name: Logout from Microsoft 365
+      if: always()
+      run: m365 logout

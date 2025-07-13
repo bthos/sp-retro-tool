@@ -1,0 +1,28 @@
+# SharePoint Tenant Configuration Template
+# Copy values from this file to your .env and configuration files
+
+# Replace [your-tenant] with your actual tenant name
+# Example: contoso.sharepoint.com
+
+TENANT_NAME=your-tenant
+SHAREPOINT_TENANT_URL=https://[your-tenant].sharepoint.com
+APP_CATALOG_URL=https://[your-tenant].sharepoint.com/sites/appcatalog
+
+# Alternative App Catalog URLs:
+# Site Collection App Catalog: https://[your-tenant].sharepoint.com/sites/[site-name]
+# Tenant App Catalog: https://[your-tenant]-admin.sharepoint.com
+
+# Admin Credentials (for development/testing only)
+M365_USERNAME=admin@[your-tenant].onmicrosoft.com
+M365_PASSWORD=your-secure-password
+
+# For production, use Azure App Registration:
+TENANT_ID=your-azure-ad-tenant-id
+CLIENT_ID=your-app-registration-client-id
+CLIENT_SECRET=your-app-registration-secret
+
+# Common tenant name patterns:
+# - company.sharepoint.com
+# - companyname.sharepoint.com  
+# - organization.sharepoint.com
+# - [custom-domain].sharepoint.com
