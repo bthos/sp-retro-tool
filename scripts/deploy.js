@@ -11,7 +11,7 @@ const config = {
   appCatalogUrl: process.env.APP_CATALOG_URL || 'https://[your-tenant].sharepoint.com/sites/appcatalog',
   username: process.env.M365_USERNAME,
   password: process.env.M365_PASSWORD,
-  packageName: 'sp-retro-tool-webpart-client-side-solution'
+  packageName: 'RetroTool'
 };
 
 // Parse command line arguments

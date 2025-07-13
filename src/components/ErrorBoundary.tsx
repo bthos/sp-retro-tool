@@ -37,7 +37,7 @@ export class ErrorBoundary extends React.Component<React.PropsWithChildren<{}>, 
           backgroundColor: '#fdf2f2',
           margin: '10px 0'
         }}>
-          <h2 style={{ color: '#d13438', marginTop: 0 }}>⚠️ Something went wrong with the Retrospective Tool</h2>
+          <h2 style={{ color: '#d13438', marginTop: 0 }}>⚠️ Something went wrong with the RetroTool</h2>
           <details style={{ marginTop: '10px' }}>
             <summary style={{ cursor: 'pointer', marginBottom: '10px' }}>
               <strong>Click to view technical details</strong>

@@ -51,10 +51,10 @@ try {
     Write-Host "🔍 Getting app information..." -ForegroundColor Yellow
     $AppListJson = & npx m365 spo app list --appCatalogUrl $AppCatalogUrl --output json
     $Apps = $AppListJson | ConvertFrom-Json
-    $TargetApp = $Apps | Where-Object { $_.Title -eq "sp-retro-tool-webpart" }
+    $TargetApp = $Apps | Where-Object { $_.Title -eq "RetroTool" }
     
     if (-not $TargetApp) {
-        throw "App 'sp-retro-tool-webpart' not found in app catalog"
+        throw "App 'RetroTool' not found in app catalog"
     }
     
     Write-Host "📱 Found app: $($TargetApp.Title) (ID: $($TargetApp.ID))" -ForegroundColor Cyan

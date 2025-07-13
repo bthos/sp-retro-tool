@@ -1,8 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
   "solution": {
-    "name": "sp-retro-tool-webpart-client-side-solution",
-    "id": "f3a9b2c4-8d7e-4f2a-9b8c-1e3f4d5a6b7c",
+    "name": "RetroTool",
+    "id": "7d2ba4b4-85b7-4b1c-a885-70aa27badb44",
     "version": "1.0.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,

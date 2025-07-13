@@ -310,7 +310,7 @@ The project includes automated CI/CD via GitHub Actions:
 4. **Configuring**: Click "Settings" to modify columns
 
 ### For Site Administrators
-1. **Add webpart**: Edit a modern page and add "Retrospective Tool" webpart
+1. **Add webpart**: Edit a modern page and add "RetroTool" webpart
 2. **Configure**: No additional setup required - works out of the box
 3. **Customize**: Users can configure columns through the settings interface
 
@@ -441,7 +441,7 @@ npx m365 login
 npx m365 spo app list --appCatalogUrl "https://[your-tenant].sharepoint.com/sites/appcatalog"
 
 # Get specific app details
-npx m365 spo app get --name "sp-retro-tool-webpart" --appCatalogUrl "https://[your-tenant].sharepoint.com/sites/appcatalog"
+npx m365 spo app get --name "RetroTool" --appCatalogUrl "https://[your-tenant].sharepoint.com/sites/appcatalog"
 
 # Test local build
 npm run build
@@ -468,7 +468,7 @@ After deployment, verify everything works:
 2. **Test on a Page**:
    - Go to any modern SharePoint site
    - Edit a page
-   - Add web part → Search "Retrospective Tool"
+   - Add web part → Search "RetroTool"
    - Verify the webpart loads and functions correctly
 
 3. **Check Browser Console**:

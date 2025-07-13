@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "id": "7d2ba4b4-85b7-4b1c-a885-70aa27badb44",
   "alias": "RetroToolWebPart",
   "componentType": "WebPart",
   "version": "*",
@@ -14,7 +14,7 @@
         "default": "Other"
       },
       "title": {
-        "default": "Retrospective Tool"
+        "default": "RetroTool"
       },
       "description": {
         "default": "A comprehensive retrospective tool for SharePoint Online"

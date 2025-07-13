@@ -83,7 +83,7 @@ jobs:
         m365 spo app add --filePath "$SPPKG_FILE" --appCatalogUrl "${{ secrets.APP_CATALOG_URL }}" --overwrite
         
         # Get the app ID
-        APP_ID=$(m365 spo app list --appCatalogUrl "${{ secrets.APP_CATALOG_URL }}" --query "[?Title=='sp-retro-tool-webpart'].ID" --output text)
+        APP_ID=$(m365 spo app list --appCatalogUrl "${{ secrets.APP_CATALOG_URL }}" --query "[?Title=='RetroTool'].ID" --output text)
         
         # Deploy the app
         m365 spo app deploy --id "$APP_ID" --appCatalogUrl "${{ secrets.APP_CATALOG_URL }}" --skipFeatureDeployment
