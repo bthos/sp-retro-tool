@@ -26,7 +26,7 @@ async function setupTenant() {
     const tenantName = await askQuestion('Enter your SharePoint tenant name (e.g., contoso): ');
     const username = await askQuestion(`Enter your admin username (e.g., admin@${tenantName}.onmicrosoft.com): `);
     const password = await askQuestion('Enter your password (will be hidden in .env): ');
-    const appId = await askQuestion('Enter your Microsoft 365 App ID (e.g., 31359c7f-bd7e-475c-86db-fdb8c937548e): ');
+    const appId = await askQuestion('Enter your Microsoft 365 CLI App ID (use the PnP Management Shell App ID from Microsoft documentation): ');
     
     // Validate inputs
     if (!tenantName || !username || !password || !appId) {
