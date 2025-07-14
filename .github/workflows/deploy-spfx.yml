@@ -25,16 +25,13 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
         
-    - name: Clean and install dependencies
+    - name: Install dependencies
       working-directory: ${{ env.PACKAGE_PATH }}
       run: |
-        echo "Removing any existing node_modules and lock files..."
-        rm -rf node_modules package-lock.json yarn.lock
-        echo "Installing dependencies with CommonJS-compatible versions..."
-        npm install --no-package-lock --legacy-peer-deps
-        echo "Verifying ESLint installation..."
-        npx eslint --version || echo "ESLint installed but version check failed"
+        echo "Installing dependencies..."
+        npm ci --legacy-peer-deps || npm install --legacy-peer-deps
         echo "Dependency installation completed!"
       
     - name: Build solution
