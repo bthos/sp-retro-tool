@@ -14,6 +14,9 @@ src/**/*.scss.d.ts
 src/**/*.module.css
 src/**/*.module.scss.js
 
+# Exception: Keep localization files
+!src/**/loc/*.js
+
 # SPFx specific
 .rush/
 .vscode/settings.json
