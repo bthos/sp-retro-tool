@@ -33,8 +33,6 @@ jobs:
         rm -rf node_modules package-lock.json yarn.lock
         echo "Installing dependencies with CommonJS-compatible versions..."
         npm install --no-package-lock --legacy-peer-deps
-        echo "Installing specific CommonJS-compatible packages..."
-        npm install globby@11.1.0 del@6.1.1 pify@4.0.1 --save-dev --no-package-lock
         echo "Dependency installation completed!"
       
     - name: Build solution
