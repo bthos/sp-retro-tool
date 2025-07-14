@@ -71,10 +71,14 @@ jobs:
         npx gulp clean
         echo "Building TypeScript and copying assets..."
         npx gulp build
+        echo "Verifying build output..."
+        ls -la lib/webparts/retroTool/loc/ || echo "No localization files found yet"
         echo "Running webpack bundle for production..."
         npx gulp bundle --ship
         echo "Creating SharePoint package..."
         npx gulp package-solution --ship
+        echo "Verifying final package..."
+        ls -la sharepoint/solution/*.sppkg
         echo "Build completed successfully!"
         
     - name: Upload build artifacts

@@ -457,7 +457,7 @@ export default class RetroTool extends React.Component<IRetroToolProps, IRetroTo
   }
 
   // Render settings modal
-  private renderSettingsModal = (): JSX.Element => {
+  private renderSettingsModal = (): JSX.Element | null => {
     if (!this.state.showSettings) return null;
 
     return (
@@ -516,7 +516,9 @@ export default class RetroTool extends React.Component<IRetroToolProps, IRetroTo
   }
 
   // Clear all localStorage data (useful for debugging)
-  private clearAllData(): void {
+  // Uncomment to use this method for debugging purposes
+  /*
+  private clearAllData = (): void => {
     try {
       localStorage.removeItem('retro-columns');
       localStorage.removeItem('retro-cards');
@@ -538,6 +540,7 @@ export default class RetroTool extends React.Component<IRetroToolProps, IRetroTo
       console.error('Error clearing retro data:', error);
     }
   }
+  */
 
   public render(): React.ReactElement<IRetroToolProps> {
     return (
