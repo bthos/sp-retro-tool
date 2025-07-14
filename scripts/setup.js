@@ -4,9 +4,6 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
-// Default Microsoft 365 CLI app ID
-const DEFAULT_M365_APP_ID = '31359c7f-bd7e-475c-86db-fdb8c937548e';
-
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
@@ -29,9 +26,10 @@ async function setupTenant() {
     const tenantName = await askQuestion('Enter your SharePoint tenant name (e.g., contoso): ');
     const username = await askQuestion(`Enter your admin username (e.g., admin@${tenantName}.onmicrosoft.com): `);
     const password = await askQuestion('Enter your password (will be hidden in .env): ');
+    const appId = await askQuestion('Enter your Microsoft 365 App ID (e.g., 31359c7f-bd7e-475c-86db-fdb8c937548e): ');
     
     // Validate inputs
-    if (!tenantName || !username || !password) {
+    if (!tenantName || !username || !password || !appId) {
       console.error('❌ All fields are required!');
       process.exit(1);
     }
@@ -52,7 +50,7 @@ async function setupTenant() {
 # Microsoft 365 Credentials
 M365_USERNAME=${username}
 M365_PASSWORD=${password}
-M365_APP_ID=${DEFAULT_M365_APP_ID}
+M365_APP_ID=${appId}
 
 # SharePoint URLs
 SHAREPOINT_TENANT_URL=${tenantUrl}

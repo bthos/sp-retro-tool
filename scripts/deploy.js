@@ -7,8 +7,8 @@ require('dotenv').config();
 
 // Configuration
 const config = {
-  tenantUrl: process.env.SHAREPOINT_TENANT_URL || 'https://[your-tenant].sharepoint.com',
-  appCatalogUrl: process.env.APP_CATALOG_URL || 'https://[your-tenant].sharepoint.com/sites/appcatalog',
+  tenantUrl: process.env.SHAREPOINT_TENANT_URL,
+  appCatalogUrl: process.env.APP_CATALOG_URL,
   username: process.env.M365_USERNAME,
   password: process.env.M365_PASSWORD,
   appId: process.env.M365_APP_ID,
