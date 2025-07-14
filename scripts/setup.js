@@ -4,6 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
+// Default Microsoft 365 CLI app ID
+const DEFAULT_M365_APP_ID = '31359c7f-bd7e-475c-86db-fdb8c937548e';
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
@@ -49,7 +52,7 @@ async function setupTenant() {
 # Microsoft 365 Credentials
 M365_USERNAME=${username}
 M365_PASSWORD=${password}
-M365_APP_ID=31359c7f-bd7e-475c-86db-fdb8c937548e
+M365_APP_ID=${DEFAULT_M365_APP_ID}
 
 # SharePoint URLs
 SHAREPOINT_TENANT_URL=${tenantUrl}

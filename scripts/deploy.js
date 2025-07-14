@@ -11,7 +11,7 @@ const config = {
   appCatalogUrl: process.env.APP_CATALOG_URL || 'https://[your-tenant].sharepoint.com/sites/appcatalog',
   username: process.env.M365_USERNAME,
   password: process.env.M365_PASSWORD,
-  appId: process.env.M365_APP_ID || '31359c7f-bd7e-475c-86db-fdb8c937548e', // Default CLI for Microsoft 365 app ID
+  appId: process.env.M365_APP_ID,
   packageName: 'RetroTool'
 };
 

@@ -297,7 +297,7 @@ The project includes automated CI/CD via GitHub Actions:
 1. Add repository secrets:
    - `M365_USERNAME`: Your admin username
    - `M365_PASSWORD`: Your admin password
-   - `M365_APP_ID`: Microsoft 365 CLI app ID (default: `31359c7f-bd7e-475c-86db-fdb8c937548e`)
+   - `M365_APP_ID`: Microsoft 365 CLI app ID (e.g., `your-app-id-here`)
    - `APP_CATALOG_URL`: Your app catalog URL
 
 2. Push to main branch triggers automatic deployment
