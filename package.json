@@ -37,13 +37,12 @@
   "devDependencies": {
     "@microsoft/sp-build-web": "^1.21.1",
     "@microsoft/sp-module-interfaces": "^1.21.1",
-    "@microsoft/sp-tslint-rules": "^1.21.1",
     "@pnp/cli-microsoft365": "^8.0.0",
     "dotenv": "^16.4.5",
     "gulp": "4.0.2",
     "typescript": "^4.5.5"
   },
   "engines": {
-    "node": ">=20.0.0 <23.0.0"
+    "node": ">=22.14.0 <23.0.0"
   }
 }

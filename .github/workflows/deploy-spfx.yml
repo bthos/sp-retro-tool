@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: '20.x'
+  NODE_VERSION: '22.x'
   PACKAGE_PATH: './'
 
 jobs:
@@ -49,9 +49,15 @@ jobs:
     - name: Build solution
       working-directory: ${{ env.PACKAGE_PATH }}
       run: |
+        echo "Starting SPFx build process..."
+        gulp clean
+        echo "Running npm build..."
         npm run build
+        echo "Running gulp bundle with ship flag..."
         gulp bundle --ship
+        echo "Running gulp package-solution with ship flag..."
         gulp package-solution --ship
+        echo "Build completed successfully!"
         
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
