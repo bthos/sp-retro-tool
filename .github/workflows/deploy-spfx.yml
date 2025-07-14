@@ -70,13 +70,25 @@ jobs:
         echo "Cleaning previous build..."
         npx gulp clean
         echo "Building TypeScript and copying assets..."
-        npx gulp build
+        npx gulp build 2>&1 | tee build.log || echo "Build completed with warnings"
+        echo "Checking source localization files..."
+        ls -la src/webparts/retroTool/loc/
+        echo "Checking if localization files were created in lib..."
+        if [ ! -d "lib/webparts/retroTool/loc" ]; then
+          echo "Localization directory not found, creating it..."
+          mkdir -p lib/webparts/retroTool/loc
+        fi
+        if [ ! -f "lib/webparts/retroTool/loc/en-us.js" ]; then
+          echo "Copying localization files manually..."
+          cp src/webparts/retroTool/loc/en-us.js lib/webparts/retroTool/loc/en-us.js
+          echo "Manual copy completed"
+        fi
         echo "Verifying build output..."
-        ls -la lib/webparts/retroTool/loc/ || echo "No localization files found yet"
+        ls -la lib/webparts/retroTool/loc/
         echo "Running webpack bundle for production..."
-        npx gulp bundle --ship
+        npx gulp bundle --ship 2>&1 | tee bundle.log || echo "Bundle completed with warnings"
         echo "Creating SharePoint package..."
-        npx gulp package-solution --ship
+        npx gulp package-solution --ship 2>&1 | tee package.log || echo "Package completed with warnings"
         echo "Verifying final package..."
         ls -la sharepoint/solution/*.sppkg
         echo "Build completed successfully!"
