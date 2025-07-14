@@ -67,13 +67,14 @@ jobs:
       working-directory: ${{ env.PACKAGE_PATH }}
       run: |
         echo "Starting SPFx build process..."
-        gulp clean
-        echo "Running npm build..."
-        npm run build
-        echo "Running gulp bundle with ship flag..."
-        gulp bundle --ship
-        echo "Running gulp package-solution with ship flag..."
-        gulp package-solution --ship
+        echo "Cleaning previous build..."
+        npx gulp clean
+        echo "Building TypeScript and copying assets..."
+        npx gulp build
+        echo "Running webpack bundle for production..."
+        npx gulp bundle --ship
+        echo "Creating SharePoint package..."
+        npx gulp package-solution --ship
         echo "Build completed successfully!"
         
     - name: Upload build artifacts
