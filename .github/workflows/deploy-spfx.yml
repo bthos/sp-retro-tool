@@ -33,7 +33,35 @@ jobs:
         rm -rf node_modules package-lock.json
         echo "Installing dependencies..."
         npm install --legacy-peer-deps
-        echo "Dependency installation completed!"
+        echo "Installing additional required dependencies..."
+        npm install eslint-plugin-react-hooks@latest --save-dev
+        echo "Fixing ajv compatibility issue..."
+        # Create compatibility shim for ajv-draft-04
+        cat > node_modules/ajv-draft-04/dist/index.js << 'EOF'
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        // Compatibility shim for ajv-draft-04 with ajv 6.x
+        const Ajv = require("ajv");
+        const draft4MetaSchema = require("./refs/json-schema-draft-04.json");
+        
+        class AjvDraft4 extends Ajv {
+          constructor(options = {}) {
+            super({
+              schemaId: 'id',
+              loadSchema: false,
+              addUsedSchema: false,
+              verbose: false,
+              validateSchema: false,
+              ...options
+            });
+            this.addMetaSchema(draft4MetaSchema, 'http://json-schema.org/draft-04/schema', false);
+          }
+        }
+        
+        module.exports = AjvDraft4;
+        exports.default = AjvDraft4;
+        EOF
+        echo "Dependency installation and patching completed!"
       
     - name: Build solution
       working-directory: ${{ env.PACKAGE_PATH }}
