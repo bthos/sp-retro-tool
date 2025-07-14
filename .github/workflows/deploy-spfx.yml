@@ -29,8 +29,10 @@ jobs:
     - name: Install dependencies
       working-directory: ${{ env.PACKAGE_PATH }}
       run: |
-        echo "Installing dependencies..."
-        npm install --legacy-peer-deps
+        echo "Cleaning previous installation..."
+        rm -rf node_modules package-lock.json
+        echo "Installing dependencies with overrides..."
+        npm install --legacy-peer-deps --force
         echo "Dependency installation completed!"
       
     - name: Build solution
