@@ -126,7 +126,7 @@ jobs:
       
     - name: Login to Microsoft 365
       run: |
-        m365 login --authType password --userName ${{ secrets.M365_USERNAME }} --password ${{ secrets.M365_PASSWORD }}
+        m365 login --authType password --userName ${{ secrets.M365_USERNAME }} --password ${{ secrets.M365_PASSWORD }} --appId ${{ secrets.M365_APP_ID }}
         
     - name: Deploy to SharePoint App Catalog
       run: |

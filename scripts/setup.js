@@ -49,6 +49,7 @@ async function setupTenant() {
 # Microsoft 365 Credentials
 M365_USERNAME=${username}
 M365_PASSWORD=${password}
+M365_APP_ID=31359c7f-bd7e-475c-86db-fdb8c937548e
 
 # SharePoint URLs
 SHAREPOINT_TENANT_URL=${tenantUrl}

@@ -11,6 +11,7 @@ const config = {
   appCatalogUrl: process.env.APP_CATALOG_URL || 'https://[your-tenant].sharepoint.com/sites/appcatalog',
   username: process.env.M365_USERNAME,
   password: process.env.M365_PASSWORD,
+  appId: process.env.M365_APP_ID || '31359c7f-bd7e-475c-86db-fdb8c937548e', // Default CLI for Microsoft 365 app ID
   packageName: 'RetroTool'
 };
 
@@ -290,7 +291,7 @@ async function attemptAuthentication() {
     try {
       console.log('');
       console.log('🔄 Trying username/password authentication...');
-      execSync(`npx m365 login --authType password --userName "${config.username}" --password "${config.password}"`, { stdio: 'inherit' });
+      execSync(`npx m365 login --authType password --userName "${config.username}" --password "${config.password}" --appId "${config.appId}"`, { stdio: 'inherit' });
       return true;
     } catch (error) {
       if (handleAADError(error)) {
@@ -439,7 +440,7 @@ async function deploy() {
         console.log('🔄 Attempting password authentication...');
         try {
           exec(
-            `npx m365 login --authType password --userName "${config.username}" --password "${config.password}"`,
+            `npx m365 login --authType password --userName "${config.username}" --password "${config.password}" --appId "${config.appId}"`,
             'Logging into Microsoft 365'
           );
         } catch (loginError) {
