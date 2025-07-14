@@ -25,19 +25,33 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: ${{ env.PACKAGE_PATH }}/package-lock.json
+        
+    - name: Get npm cache directory
+      id: npm-cache-dir
+      shell: bash
+      run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+      
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      id: npm-cache
+      with:
+        path: |
+          ${{ steps.npm-cache-dir.outputs.dir }}
+          node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
         
     - name: Install dependencies
       working-directory: ${{ env.PACKAGE_PATH }}
-      run: npm ci
+      run: npm install
       
     - name: Build solution
       working-directory: ${{ env.PACKAGE_PATH }}
       run: |
-        gulp clean
-        gulp bundle --production
-        gulp package-solution --production
+        npm run build
+        gulp bundle --ship
+        gulp package-solution --ship
         
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
