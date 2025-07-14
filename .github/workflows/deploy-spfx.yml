@@ -31,8 +31,8 @@ jobs:
       run: |
         echo "Cleaning previous installation..."
         rm -rf node_modules package-lock.json
-        echo "Installing dependencies with overrides..."
-        npm install --legacy-peer-deps --force
+        echo "Installing dependencies..."
+        npm install --legacy-peer-deps
         echo "Dependency installation completed!"
       
     - name: Build solution
